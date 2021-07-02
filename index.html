@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz</title>
+    <script src="aplicativo.js"></script>
+    <!-- Bootstrap início -->
+	  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <!-- Bootstrap fim -->   
+    <!-- Font Awesome -->
+    <script defer src="https://use.fontawesome.com/releases/v5.0.8/js/all.js"></script>
+    <!--Daterangepicker início-->
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" /> 
+    <!--Daterangepicker fim-->
+    
+    
+</head>
+<body onload="carregarQuiz()">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-danger mb-5">
+        <div class="container" >
+            <a class="navbar-brand">
+               <img src="quiz.png" style="border-radius: 100%;" width="50" height="35" alt="Quiz"> 
+            </a>
+        </div>
+    </nav>
+
+    <div class="container" >
+        <div class="row">
+            <div class="col mb-5">
+                <h1 class="display-4">Quiz</h1>
+            </div> 
+        </div>
+            <div class="row " >
+              <div class="col d-flex justify-content-end">
+                <button type="button" class="btn btn-danger" style="justify-content: end; margin-bottom: 15px;" data-toggle='modal' data-target="#modal-quiz">
+                    <i class="fas fa-plus-square"></i> Adicionar Quiz
+                </button>
+              </div>
+              </div>
+            <div class="row">
+              <div class="col mb-5">
+                <table class="table" >
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Nome do Quiz</th>
+                      <th>Quantidade de perguntas</th>
+                      <th>Ações</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+      
+                  <tbody id="tabelaQuiz">
+                  
+                  </tbody>
+                </table>
+              </div>
+            </div>     
+           
+  <!-- Modal -->
+  <div class="modal" id="modal-quiz" tabindex="-1" role="dialog" style="overflow-y: auto;">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" style="overflow-y: auto;">
+        <div class="modal-header">
+          <h5 class="modal-title" id="modal-title"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body" id="modal-body" onload="carregarPergunta()">
+          <div class="container">
+            <div class="row" id='modal-quiz-info'>
+              <div class="col-md-6" >
+                Nome:
+                <div id="quiz_nome">
+                  <input type="text " placeholder="Nome do Quiz" id="nome_quiz">
+                </div>
+              </div>
+              <div class="col-md-6">
+                Data de Vigência:
+                <div id="quiz_data">
+                  <i class="fa fa-calendar"></i>
+                  <input type="text" name="daterange" />
+                  <script>
+                  $(function() {
+                    $('input[name="daterange"]').daterangepicker({
+                      opens: 'left'
+                    }, function(start, end, label) {
+                      registro_data(start.format('DD/MM/YYYY'),end.format('DD/MM/YYYY'));
+                    });
+                  });
+                  </script>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col d-flex justify-content-end">
+                <button id="btn_add_modal_pergunta" type="button" class="btn btn-success" style="justify-content: end; margin-top: 15px; margin-bottom: 15px;" data-toggle='modal' data-target="#modal-respostas" disabled>Adicionar pergunta</button>
+              </div>
+            </div>
+            <div class="row">
+              <div class="col">
+                <table class="table" >
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Nome da Pergunta</th>
+                      <th>Quantidade de respostas</th>
+                      <th>Ações</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelaPergunta">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" onclick="cadastrarQuiz()">Adicionar/Salvar Quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+     <!-- Modal Respostas-->
+     <div class="modal" id="modal-respostas" tabindex="-1" role="dialog" style="overflow-y: auto;">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content" style="overflow-y: auto;">
+          <div class="modal-header">
+            <h5 class="modal-title" id="m_title">Adicionar/Editar Quiz</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body" id="m_body" onload="carregarResposta()">
+              <div class="container">
+                <div class="row" id="modal-pergunta-info" >
+                  <div class="col-md-6">
+                      <p>Descrição da pergunta</p>
+                    </div>
+                    <div class="col-md-6">
+                      <input type="text " placeholder="Insira a pergunta" id="pergunta">
+                  </div>
+              </div>
+              <hr>
+              <div class="row">
+                <div class=" col d-flex justify-content-end">
+                    <button id="btn_add_pergunta" type="button" class="btn btn-success" style="margin-bottom: 15px; margin-top: 15px;" onclick="adicionarPergunta()">Adicionar/Salvar Pergunta</button>
+                </div>
+              </div>
+              <hr>
+                <div class="row" >
+                  <div class="col-md-3">
+                      <p>Descrição da resposta</p>
+                  </div>
+                  <div class="col-md-6">
+                      <input type="text " placeholder="Insira a resposta" id="resposta">
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-check" id="checkbox">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="Verdadeiro" value ="true" checked>
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Verdadeiro
+                      </label>
+                    </div>
+                    <div class="form-check" id="checkbox">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" value='false' id="falso" >
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Falso
+                      </label>
+                    </div>
+                  </div>
+                </div>  
+                  <div class="row" >
+                    <div class="col">
+                      <table class="table" >
+                        <thead>
+                          <tr>
+                            <th>Resposta</th>
+                            <th>Correta</th>
+                            <th>Ações</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabelaResposta">
+                        </tbody>
+                      </table>
+                    </div>
+              </div>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+            <button id="btn_add_resposta" type="button" class="btn btn-success" onclick="adicionarResposta()" disabled>Adicionar/Salvar Resposta</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    </div>
+  <!--Modal Editar-->
+  <div class="modal" id="modal-editar" tabindex="-1" role="dialog" style="overflow-y: auto;">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" style="overflow-y: auto;">
+        <div class="modal-header">
+          <h5 class="modal-title-editar">Editar Quiz</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body-editar" onload="carregarPergunta()">
+          <div class="container">
+            <div class="row" id='modal-quiz-info'>
+              <div class="col-md-6" >
+                Nome:
+                <div id="quiz_nome">
+                  <input type="text " placeholder="Nome do Quiz" id="nome_quiz_0">
+                </div>
+              </div>
+              <div class="col-md-6">
+                Data de Vigência:
+                <div id="quiz_data">
+                  <i class="fa fa-calendar"></i>
+                  <input type="text" name="daterange" />
+                  <script>
+                  $(function() {
+                    $('input[name="daterange"]').daterangepicker({
+                      opens: 'left'
+                    }, function(start, end, label) {
+                      registro_data(start.format('DD/MM/YYYY'),end.format('DD/MM/YYYY'));
+                    });
+                  });
+                  </script>
+                </div>
+              </div>
+            </div>
+            <hr>
+            <div class="row">
+              <div class="col d-flex justify-content-end">
+                <button id="btn_add_modal_pergunta" type="button" class="btn btn-success" style="justify-content: end; margin-top: 15px; margin-bottom: 15px;" data-toggle='modal' data-target="#modal-respostas">Adicionar pergunta</button>
+              </div>
+            </div>
+            <div class="row" onload="carregarPergunta()">
+              <div class="col">
+                <table class="table" >
+                  <thead>
+                    <tr>
+                      <th>Código</th>
+                      <th>Nome da Pergunta</th>
+                      <th>Quantidade de respostas</th>
+                      <th>Ações</th>
+                      <th></th>
+                    </tr>
+                  </thead>
+                  <tbody id="tabelaPerguntaEditar">
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" id="btn_salvar" >Salvar Quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+   <!--Modal Editar Pergunta-->
+   <div class="modal" id="modal-editar-pergunta" tabindex="-1" role="dialog" style="overflow-y: auto;">
+    <div class="modal-dialog modal-lg" role="document">
+      <div class="modal-content" style="overflow-y: auto;">
+        <div class="modal-header">
+          <h5 class="modal-title-editar"></h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body-editar">
+          <div class="container">
+            <div class="row" id="modal-pergunta-info" >
+              <div class="col-md-6">
+                  <p>Descrição da pergunta</p>
+                </div>
+                <div class="col-md-6">
+                  <input type="text " placeholder="Insira a pergunta" id="pergunta_editada">
+              </div>
+          </div>
+          </div>
+          <hr>
+              <div class="row">
+                <div class=" col d-flex justify-content-end">
+                    <button id="btn_salvar_pergunta" type="button" class="btn btn-success" style="margin-bottom: 15px; margin-top: 15px;" >Adicionar/Salvar Pergunta</button>
+                </div>
+              </div>
+          <hr>
+                <div class="row" >
+                  <div class="col-md-3">
+                      <p>Descrição da resposta</p>
+                  </div>
+                  <div class="col-md-6">
+                      <input type="text " placeholder="Insira a resposta" id="resposta">
+                  </div>
+                  <div class="col-md-3">
+                    <div class="form-check" id="checkbox">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" id="Verdadeiro" value ="true" checked>
+                      <label class="form-check-label" for="flexRadioDefault1">
+                        Verdadeiro
+                      </label>
+                    </div>
+                    <div class="form-check" id="checkbox">
+                      <input class="form-check-input" type="radio" name="flexRadioDefault" value='false' id="falso" >
+                      <label class="form-check-label" for="flexRadioDefault2">
+                        Falso
+                      </label>
+                    </div>
+                  </div>
+                </div>  
+                  <div class="row" >
+                    <div class="col">
+                      <table class="table" >
+                        <thead>
+                          <tr>
+                            <th>Resposta</th>
+                            <th>Correta</th>
+                            <th>Ações</th>
+                            <th></th>
+                          </tr>
+                        </thead>
+                        <tbody id="tabelaRespostaEditar">
+                        </tbody>
+                      </table>
+                    </div>
+              </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-danger" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-success" id="btn_salvar_pergunta" >Salvar Pergunta</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  </div>    
+</body>
+</html>
